@@ -2,16 +2,10 @@
 title: "R Notebook"
 output: github_document
 ---
-
-
-
-```{r}
-plot(cars)
-```
-
-```{bash}
+```{bash, eval = FALSE}
 wget -i url_data
 ```
+
 
 ```{r}
 #charger les librairies 
@@ -62,6 +56,7 @@ plotQualityProfile(fnFs[1:2])
 plotQualityProfile(fnRs[1:2])
 ```
 
+
 ```{r}
 # créer des objets (filtFs et filtRs) pour stoquer les séquences filtrées.
 filtFs <- file.path(path, "filtered", paste0(sample.names, "_F_filt.fastq.gz"))
@@ -77,57 +72,46 @@ out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, truncLen=c(180,200),
               compress=TRUE, multithread=TRUE)
 head(out)
 ```
-
-```{r}
+```{r }
 errF <- learnErrors(filtFs, multithread=TRUE)
 ```
+
 ```{r}
 errR <- learnErrors(filtRs, multithread=TRUE)
 ```
-
 ```{r}
 plotErrors(errF, nominalQ=TRUE)
 ```
-
 ```{r}
 dadaFs <- dada(filtFs, err=errF, multithread=TRUE)
 ```
-
 ```{r}
 dadaRs <- dada(filtRs, err=errR, multithread=TRUE)
 ```
-
 ```{r}
 dadaFs[[1]]
 ```
-
 ```{r}
 dadaRs[[1]]
 ```
-
 ```{r}
 mergers <- mergePairs(dadaFs, filtFs, dadaRs, filtRs, verbose=TRUE)
 head(mergers[[1]])
 ```
-
 ```{r}
 seqtab <- makeSequenceTable(mergers)
 dim(seqtab)
 ```
-
 ```{r}
 table(nchar(getSequences(seqtab)))
 ```
-
 ```{r}
 seqtab.nochim <- removeBimeraDenovo(seqtab, method="consensus", multithread=TRUE, verbose=TRUE)
 dim(seqtab.nochim)
 ```
-
 ```{r}
 sum(seqtab.nochim)/sum(seqtab)
 ```
-
 ```{r}
 #Tableau de suivi,voir combien de séquences ont été éliminées à chaque étape
 getN <- function(x) sum(getUniques(x))
@@ -135,8 +119,8 @@ track <- cbind(out, sapply(dadaFs, getN), sapply(dadaRs, getN), sapply(mergers, 
 colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
 rownames(track) <- sample.names
 head(track)
-```
 
+```
 ```{bash}
 #attribuer une taxonomie aux variants de séquence
 wget https://zenodo.org/record/4587955/files/silva_nr99_v138.1_train_set.fa.gz?download=1
@@ -158,9 +142,13 @@ library(phyloseq); packageVersion("phyloseq")
 library(Biostrings); packageVersion("Biostrings")
 library(ggplot2); packageVersion("ggplot2")
 ```
-
 ```{r}
 theme_set(theme_bw())
 ```
+# Les séquences d'ADN mise en ligne par l'auteur étaient dans un seul dossier (Ne sont pas séparées selon les régions d'étude), cela m'a empéché d'établir un graphique qui montre la taxonomie des microorganismes selon la région.
 
-# Les séquences d'ADN mise en ligne par l'auteur étaient dans un seul dossier (Ne sont pas séparées selon les régions d'étude), cela m'a empéché d'établir un graphique qui montre la taxonomie des microorganismes selon la région. 
+
+
+
+
+
